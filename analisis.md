@@ -23,7 +23,7 @@
 ---
 
 ## Masalah 4
-* **Gejala:** *Container* berhasil berjalan, namun saat diuji menggunakan perintah `8080` di port iximiuz, selalu muncul *error* `Connection refused`.
+* **Gejala:** *Container* berhasil berjalan, namun saat di expose menggunakan perintah `8080` di port iximiuz, selalu muncul *error* `Connection refused`.
 * **Penyebab:** Terdapat sisa karakter *backtick* di bagian atas dan bawah file `nginx.conf`. Selain itu, terdapat *typo* penulisan target *server* seperti `web11:80` dan `web3:8080` yang menyebabkan koneksi tidak diterima.
 * **Solusi:** Menghapus karakter *backtick* pada file `nginx.conf` dan memperbaiki *typo* pada blok *upstream backend* menjadi:
 ```nginx
@@ -32,3 +32,18 @@ upstream backend {
     server web2:80;
     server web3:80;
 }
+
+--- 
+
+## Masalah 5
+
+* **Gejala:** Aplikasi web server cluster tidak dapat terhubung ke database MySQL dan tidak mendapatkan pembagian beban traffic dari Load Balancer Nginx secara merata.
+* **Penyebab:** Terdapat beberapa typo pada konfigurasi variabel environment, jaringan, dan volume di file docker-compose.yml:
+DB_HOST milik web1 mengarah ke nama mysql yang seharusnya db.
+
+DB_PASS milik web2 mengalami typo menjadi wrongpassword.
+
+Service web3 kekurangan network - frontend sehingga tidak terjangkau oleh Nginx.
+
+Deklarasi volume global di baris paling bawah (database-data) tidak sinkron dengan volume yang dipanggil oleh service db (db-data) karena typo.
+* **Solusi:** Melakukan koreksi pada file docker-compose.yml dengan mengubah DB_HOST menjadi db, mengubah password web2 menjadi student123, menambahkan network - frontend pada web3, dan menyamakan teks volume global paling bawah menjadi:
