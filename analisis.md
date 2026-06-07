@@ -32,13 +32,14 @@ upstream backend {
     server web2:80;
     server web3:80;
 }
-
+```
 --- 
 
 ## Masalah 5
 
 * **Gejala:** Aplikasi web server cluster tidak dapat terhubung ke database MySQL dan tidak mendapatkan pembagian beban traffic dari Load Balancer Nginx secara merata.
 * **Penyebab:** Terdapat beberapa typo pada konfigurasi variabel environment, jaringan, dan volume di file docker-compose.yml:
+
 DB_HOST milik web1 mengarah ke nama mysql yang seharusnya db.
 
 DB_PASS milik web2 mengalami typo menjadi wrongpassword.
